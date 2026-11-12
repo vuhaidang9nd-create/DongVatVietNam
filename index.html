@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Động Vật Việt Nam</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            /* Modern stylish background: Soft gray with a subtle dot pattern */
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Modern Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        /* Glassmorphism utilities */
+        .glass {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        .glass-modal {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        /* Image hover zoom */
+        .card-img-wrapper {
+            overflow: hidden;
+        }
+        .card-img {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .animal-card:hover .card-img {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- Header Section -->
+    <header class="sticky top-0 z-40 glass shadow-sm mb-10 transition-all duration-300">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="text-2xl md:text-3xl bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl p-2 shadow-lg text-white flex items-center justify-center">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-xl md:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600 tracking-tight">
+                    Động Vật Việt Nam
+                </h1>
+            </div>
+            <div class="hidden sm:flex items-center space-x-1 text-sm font-semibold text-slate-500 bg-slate-100/50 px-4 py-2 rounded-full border border-slate-200">
+                <span class="text-emerald-500">🌿</span>
+                <span>Hệ sinh thái tự nhiên</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content: Grid Layout -->
+    <main class="container mx-auto px-4 flex-grow mb-16 relative z-10">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8" id="animal-grid">
+            <!-- Cards will be injected here by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-white/80 backdrop-blur-md border-t border-slate-200 text-slate-600 py-10 mt-auto text-center relative z-10">
+        <div class="container mx-auto px-4 flex flex-col items-center justify-center">
+            <div class="inline-flex items-center justify-center space-x-2 px-5 py-1.5 rounded-full bg-slate-50 border border-slate-200 mb-4 shadow-sm">
+                <span class="text-xs font-semibold uppercase tracking-widest text-slate-500">Thiết kế & Phát triển</span>
+            </div>
+            <p class="text-2xl font-extrabold text-slate-800 tracking-wide">Thanh Huyền</p>
+            <p class="text-sm mt-3 text-slate-400 font-medium">© 2026 Động Vật Việt Nam. Cùng bảo vệ thiên nhiên.</p>
+        </div>
+    </footer>
+
+    <!-- Modal Overlay -->
+    <div id="modal-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+        <!-- Detailed Modal Content (Split Layout) -->
+        <div id="animal-modal" class="glass-modal rounded-[2rem] max-w-4xl w-full shadow-2xl transform scale-95 transition-transform duration-300 relative flex flex-col md:flex-row overflow-hidden max-h-[90vh] md:max-h-none overflow-y-auto md:overflow-hidden">
+            
+            <!-- Close Button -->
+            <button id="close-modal" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/60 backdrop-blur hover:bg-white text-slate-700 transition-all shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <!-- Left Side: Large Image -->
+            <div class="md:w-5/12 h-64 md:h-auto relative shrink-0">
+                <img id="modal-img" src="" alt="Animal Image" class="absolute inset-0 w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent md:hidden"></div>
+            </div>
+
+            <!-- Right Side: Details -->
+            <div class="md:w-7/12 p-6 md:p-8 flex flex-col justify-center bg-white/40">
+                <h3 id="modal-name" class="text-4xl font-extrabold text-slate-800 mb-2 capitalize"></h3>
+                <p id="modal-short-desc" class="text-lg text-emerald-600 font-medium mb-6"></p>
+                
+                <div class="space-y-5">
+                    <!-- Tuổi thọ -->
+                    <div class="flex items-start gap-4">
+                        <div class="bg-emerald-100 p-2.5 rounded-xl text-emerald-600 shrink-0">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tuổi thọ trung bình</h4>
+                            <p id="modal-lifespan" class="text-slate-700 font-semibold text-base mt-0.5"></p>
+                        </div>
+                    </div>
+
+                    <!-- Cân nặng -->
+                    <div class="flex items-start gap-4">
+                        <div class="bg-blue-100 p-2.5 rounded-xl text-blue-600 shrink-0">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Cân nặng</h4>
+                            <p id="modal-weight" class="text-slate-700 font-semibold text-base mt-0.5"></p>
+                        </div>
+                    </div>
+
+                    <!-- Tập tính -->
+                    <div class="flex items-start gap-4">
+                        <div class="bg-amber-100 p-2.5 rounded-xl text-amber-600 shrink-0">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tập tính</h4>
+                            <p id="modal-behavior" class="text-slate-700 font-medium text-sm mt-1 leading-relaxed"></p>
+                        </div>
+                    </div>
+
+                    <!-- Môi trường -->
+                    <div class="flex items-start gap-4">
+                        <div class="bg-teal-100 p-2.5 rounded-xl text-teal-600 shrink-0">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Môi trường sống</h4>
+                            <p id="modal-habitat" class="text-slate-700 font-medium text-sm mt-1 leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript logic -->
+    <script>
+        // Detailed Data for animals with real unsplash photos
+        const animals = [
+            { 
+                name: 'Chó', 
+                image: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=800',
+                shortDesc: 'Người bạn trung thành nhất của con người.',
+                lifespan: '10 - 15 năm',
+                weight: '5 - 30 kg',
+                behavior: 'Trung thành, có tính bầy đàn cao, bảo vệ lãnh thổ tốt và rất thông minh trong việc học lệnh.',
+                habitat: 'Sống gắn bó cùng con người trong nhà, trang trại, đô thị.'
+            },
+            { 
+                name: 'Mèo', 
+                image: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=800',
+                shortDesc: 'Thú cưng độc lập và vô cùng duyên dáng.',
+                lifespan: '12 - 18 năm',
+                weight: '3 - 5 kg',
+                behavior: 'Độc lập, thích ngủ nhiều vào ban ngày, leo trèo giỏi và có bản năng săn mồi (bắt chuột).',
+                habitat: 'Phổ biến ở các khu dân cư, nhà ở, đô thị hiện đại.'
+            },
+            { 
+                name: 'Bò', 
+                image: 'https://images.unsplash.com/photo-1527153857715-3908f2bae5e8?auto=format&fit=crop&q=80&w=800',
+                shortDesc: 'Nguồn cung cấp thực phẩm và sức kéo.',
+                lifespan: '15 - 20 năm',
+                weight: '400 - 700 kg',
+                behavior: 'Động vật nhai lại, hiền lành, sống theo bầy đàn, ăn cỏ và rơm rạ.',
+                habitat: 'Đồng cỏ, trang trại chăn nuôi, vùng đồi núi thấp.'
+            },
+            { 
+                name: 'Lợn', 
+                image: 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&q=80&w=800',
+                shortDesc: 'Vật nuôi phổ biến, mang lại giá trị kinh tế.',
+                lifespan: '10 - 15 năm',
+                weight: '50 - 200 kg',
+                behavior: 'Ăn tạp, thích dùng mõm ủn đất tìm thức ăn, thường xuyên đầm lầy để điều hòa thân nhiệt.',
+                habitat: 'Chuồng trại chăn nuôi gia đình, vùng nông thôn nông nghiệp.'
+            },
+            { 
+                name: 'Gà', 
+                image: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&q=80&w=800',
+                shortDesc: 'Tiếng gáy báo hiệu bình minh ngày mới.',
+                lifespan: '5 - 10 năm',
+                weight: '1.5 - 3 kg',
+                behavior: 'Kiếm ăn ban ngày, bới đất tìm giun và hạt. Gà trống gáy sáng báo thức, gà mái ấp trứng.',
+                habitat: 'Sân vườn, trang trại, bãi cỏ hoang dã.'
+            },
+            { 
+                name: 'Cá', 
+                image: 'https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&q=80&w=800',
+                shortDesc: 'Loài thủy sản đa dạng và quen thuộc.',
+                lifespan: '3 - 10 năm',
+                weight: '1 - 5 kg',
+                behavior: 'Bơi lội theo đàn, ăn tạp (thực vật thủy sinh, phù du, côn trùng nhỏ).',
+                habitat: 'Ao, hồ, sông, suối, môi trường nước ngọt nói chung.'
+            },
+            { 
+                name: 'Chim', 
+                image: 'https://images.unsplash.com/photo-1555169062-013468b47731?auto=format&fit=crop&q=80&w=800',
+                shortDesc: 'Làm đẹp bầu trời với tiếng hót líu lo.',
+                lifespan: '3 - 5 năm',
+                weight: '20 - 50 gram',
+                behavior: 'Bay lượn, làm tổ trên cây hoặc khe mái nhà, kiếm ăn theo đàn nhỏ.',
+                habitat: 'Khu vực có cây cối, đồng ruộng, kể cả khu dân cư đông đúc.'
+            },
+            { 
+                name: 'Tôm', 
+                image: 'images.jpg',
+                shortDesc: 'Thủy hải sản giàu dinh dưỡng và phổ biến.',
+                lifespan: '1 - 2 năm',
+                weight: '20 - 100 gram',
+                behavior: 'Bơi lùi khi gặp nguy hiểm, sinh trưởng qua nhiều lần lột xác.',
+                habitat: 'Sống ở ao, đầm, cửa sông, vùng ven biển (nước ngọt, lợ, mặn).'
+            },
+            { 
+                name: 'Cua', 
+                image: 'images (1).jpg',
+                shortDesc: 'Động vật giáp xác với cặp càng mạnh mẽ.',
+                lifespan: '2 - 4 năm',
+                weight: '100 - 500 gram',
+                behavior: 'Di chuyển bò ngang đặc trưng, tự vệ bằng càng lớn, thường đào hang trú ẩn.',
+                habitat: 'Bãi bùn, đồng ruộng, đầm lầy ngập mặn, ao hồ.'
+            }
+        ];
+
+        const gridContainer = document.getElementById('animal-grid');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const animalModal = document.getElementById('animal-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        
+        // Modal Elements
+        const modalImg = document.getElementById('modal-img');
+        const modalName = document.getElementById('modal-name');
+        const modalShortDesc = document.getElementById('modal-short-desc');
+        const modalLifespan = document.getElementById('modal-lifespan');
+        const modalWeight = document.getElementById('modal-weight');
+        const modalBehavior = document.getElementById('modal-behavior');
+        const modalHabitat = document.getElementById('modal-habitat');
+
+        // Function to render cards
+        function renderCards() {
+            animals.forEach((animal) => {
+                const card = document.createElement('div');
+                card.className = `
+                    animal-card glass rounded-[1.5rem] shadow-sm overflow-hidden
+                    cursor-pointer flex flex-col
+                    transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl
+                    group bg-white/70
+                `;
+                
+                // Card contents with Image Header
+                card.innerHTML = `
+                    <div class="card-img-wrapper h-48 w-full relative bg-slate-200">
+                        <img src="${animal.image}" alt="${animal.name}" class="card-img w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                            <span class="text-white text-sm font-semibold tracking-wider flex items-center gap-1">
+                                Xem chi tiết <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-grow flex flex-col justify-center text-center">
+                        <h2 class="text-2xl font-extrabold text-slate-800 capitalize mb-2 group-hover:text-emerald-600 transition-colors">${animal.name}</h2>
+                        <p class="text-slate-500 text-sm font-medium line-clamp-2">${animal.shortDesc}</p>
+                    </div>
+                `;
+
+                // Add click event to open modal
+                card.addEventListener('click', () => openModal(animal));
+                gridContainer.appendChild(card);
+            });
+        }
+
+        // Modal logic for opening
+        function openModal(animal) {
+            // Populate data
+            modalImg.src = animal.image;
+            modalName.textContent = animal.name;
+            modalShortDesc.textContent = animal.shortDesc;
+            modalLifespan.textContent = animal.lifespan;
+            modalWeight.textContent = animal.weight;
+            modalBehavior.textContent = animal.behavior;
+            modalHabitat.textContent = animal.habitat;
+            
+            // Show overlay & animate in
+            modalOverlay.classList.remove('pointer-events-none', 'opacity-0');
+            animalModal.classList.remove('scale-95');
+            animalModal.classList.add('scale-100');
+            
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Modal logic for closing
+        function closeModal() {
+            // Hide overlay & animate out
+            modalOverlay.classList.add('opacity-0');
+            animalModal.classList.remove('scale-100');
+            animalModal.classList.add('scale-95');
+            
+            // Wait for transition before hiding totally
+            setTimeout(() => {
+                modalOverlay.classList.add('pointer-events-none');
+                document.body.style.overflow = ''; // Restore body scroll
+            }, 300);
+        }
+
+        // Event listeners for closing the modal
+        closeModalBtn.addEventListener('click', closeModal);
+        
+        // Close modal when clicking outside of it
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+
+        // Add Escape key logic for accessibility
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !modalOverlay.classList.contains('opacity-0')) {
+                closeModal();
+            }
+        });
+
+        // Initialize the app
+        renderCards();
+    </script>
+</body>
+</html>
